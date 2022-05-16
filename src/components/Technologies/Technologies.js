@@ -9,7 +9,7 @@ const Technologies = () =>  (
     <br/>
     <SectionTitle>Technologies</SectionTitle>
     <SectionText>
-      I've worked with etc etc
+      This is the tech stack I am most familiar with:
     </SectionText>
     <List>
       <ListItem>
@@ -17,8 +17,8 @@ const Technologies = () =>  (
         <ListContainer>
           <ListTitle>Front-End</ListTitle>
           <ListParagraph>
-            Experienced with <br/>
-            React.js
+            <br/>
+            React.js, JavaScript, HTML, SASS, CSS
           </ListParagraph>
         </ListContainer >
       </ListItem>
@@ -27,12 +27,12 @@ const Technologies = () =>  (
         <ListContainer>
           <ListTitle>Back-End</ListTitle>
           <ListParagraph>
-            Experienced with <br/>
-            Node.js and Databases
+            <br/>
+            Node.js, Express.js, MongoDB, MySQL
           </ListParagraph>
         </ListContainer >
       </ListItem>
-      <ListItem>
+      {/* <ListItem>
         <DiZend size='3rem'/>
         <ListContainer>
           <ListTitle>Front-End</ListTitle>
@@ -41,7 +41,7 @@ const Technologies = () =>  (
             React,js
           </ListParagraph>
         </ListContainer >
-      </ListItem>
+      </ListItem> */}
 
     </List>
   </Section>

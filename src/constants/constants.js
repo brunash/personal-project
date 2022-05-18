@@ -5,7 +5,6 @@ export const projects = [
       image: '/images/1.png',
       tags: ['MongoDB', 'Express', 'React', 'Node'],
     source: 'https://github.com/brunash/CapStone-NatureSeeker',
-    // visit: 'https://google.com',
     id: 0,
   },
   {
@@ -14,16 +13,14 @@ export const projects = [
     image: '/images/2.png',
     tags: ['React', 'JavaScript', 'Jira', 'SASS'],
     source: 'https://github.com/brunash/instock-client',
-    // visit: 'https://google.com',
     id: 1,
   },
   {
     title: 'BrainFlix',
     description: "A Youtube kind of app where users can upload, comment, delete and like videos.",
-      image: '/images/3.jpg',
+      image: '/images/3.png',
       tags: ['JavaScript', 'SASS', 'React' ],
     source: 'https://github.com/brunash/brainFlix',
-    // visit: 'https://google.com',
     id: 2,
   },
   {
@@ -32,7 +29,6 @@ export const projects = [
     image: '/images/4.png',
     tags: ['JavaScript', 'Axios', 'SASS'],
     source: 'https://github.com/brunash/brainStation-bandsite.git',
-    // visit: 'https://google.com',
     id: 3,
   },
 ];

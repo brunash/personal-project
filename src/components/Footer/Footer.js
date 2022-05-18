@@ -12,7 +12,7 @@ const Footer = () => {
           <LinkTitle>Email</LinkTitle>
           <LinkItem href='mailto:slobodanzaja@gmail.com'>slobodanzaja@gmail.com</LinkItem>
         </LinkColumn>
-        <SocialIconsContainer>
+        {/* <SocialIconsContainer>
         <CompanyContainer>
           <Slogan></Slogan>
         </CompanyContainer>
@@ -24,7 +24,7 @@ const Footer = () => {
           <AiFillLinkedin size='2.5rem'/>
         </SocialIcons>
         </SocialContainer>
-      </SocialIconsContainer>
+      </SocialIconsContainer> */}
       </LinkList>
       
     </FooterWrapper>

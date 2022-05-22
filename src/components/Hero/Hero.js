@@ -1,6 +1,5 @@
 import React from 'react';
-import { Section, SectionText, SectionTitle } from '../../styles/GlobalComponents';
-import Button from '../../styles/GlobalComponents/Button';
+import { Section, SectionTitle } from '../../styles/GlobalComponents';
 import { LeftSection } from './HeroStyles';
 
 const Hero = (props) => (
@@ -11,11 +10,7 @@ const Hero = (props) => (
         a Web Developer<br/>
 
       </SectionTitle>
-      {/* <SectionText>
-        
-
-      </SectionText> */}
-      {/* <Button onClick={() => window.location = 'https://google.com'}>Learn more</Button> */}
+      
     </LeftSection>
   </Section>
 );

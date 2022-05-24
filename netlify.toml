@@ -5,5 +5,5 @@
 
 [[redirects]]
   from = "/*"
-  to = "/src/pages/index.js"
+  to = "./src/pages/index.js"
   status = 200

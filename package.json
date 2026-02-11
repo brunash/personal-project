@@ -1,19 +1,21 @@
 {
-  "name": "portfolio_nextjs",
-  "version": "0.1.0",
+  "name": "imperialism-reborn",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && next export",
-    "start": "next start"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "next": "^10.2.3",
-    "next.js": "^1.0.3",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-icons": "^4.2.0",
-    "styled-components": "^5.3.0",
-    "styled-normalize": "^8.0.7"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^6.3.5"
   }
 }

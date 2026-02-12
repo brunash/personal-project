@@ -7,117 +7,63 @@ import { canAfford } from '../game/engine/EconomyEngine.js';
 import { TREATY_TYPES, RELATION_STATUS } from '../game/engine/DiplomacyEngine.js';
 
 const TABS = {
-  TILE: 'tile',
-  ECONOMY: 'economy',
-  MILITARY: 'military',
-  DIPLOMACY: 'diplomacy',
-  RESEARCH: 'research',
-  LOG: 'log',
+  TILE: 'tile', ECONOMY: 'economy', MILITARY: 'military',
+  DIPLOMACY: 'diplomacy', RESEARCH: 'research', LOG: 'log',
 };
 
 export default function SidePanel({
-  gameState,
-  selectedTile,
-  selectedUnit,
-  onBuild,
-  onRecruit,
-  onSelectUnit,
-  onDeselectUnit,
-  onDeclareWar,
-  onProposeTreaty,
-  onSetResearch,
+  gameState, selectedTile, selectedUnit,
+  onBuild, onRecruit, onSelectUnit, onDeselectUnit,
+  onDeclareWar, onProposeTreaty, onSetResearch,
 }) {
   const [activeTab, setActiveTab] = useState(TABS.TILE);
   const player = gameState.nations.find(n => n.isPlayer);
 
   const tabs = [
-    { id: TABS.TILE, label: '🗺️', title: 'Territory' },
-    { id: TABS.ECONOMY, label: '💰', title: 'Economy' },
-    { id: TABS.MILITARY, label: '⚔️', title: 'Military' },
-    { id: TABS.DIPLOMACY, label: '🤝', title: 'Diplomacy' },
-    { id: TABS.RESEARCH, label: '🔬', title: 'Research' },
-    { id: TABS.LOG, label: '📜', title: 'Log' },
+    { id: TABS.TILE, icon: '\u{1F5FA}', label: 'Land' },
+    { id: TABS.ECONOMY, icon: '\u{1F4B0}', label: 'Econ' },
+    { id: TABS.MILITARY, icon: '\u{2694}', label: 'Army' },
+    { id: TABS.DIPLOMACY, icon: '\u{1F91D}', label: 'Diplo' },
+    { id: TABS.RESEARCH, icon: '\u{1F52C}', label: 'Tech' },
+    { id: TABS.LOG, icon: '\u{1F4DC}', label: 'Log' },
   ];
 
   return (
-    <div style={{
-      width: 300,
-      background: '#12122a',
-      borderLeft: '2px solid #333355',
-      display: 'flex',
-      flexDirection: 'column',
-      color: '#e0e0e0',
-      fontSize: 13,
-      flexShrink: 0,
-      overflow: 'hidden',
-    }}>
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #333' }}>
+    <div className="sidepanel">
+      <div className="sidepanel-tabs">
         {tabs.map(tab => (
           <button
             key={tab.id}
+            className={`sidepanel-tab ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
-            title={tab.title}
-            style={{
-              flex: 1,
-              padding: '8px 4px',
-              background: activeTab === tab.id ? '#1e1e3a' : 'transparent',
-              border: 'none',
-              borderBottom: activeTab === tab.id ? '2px solid #6688cc' : '2px solid transparent',
-              color: activeTab === tab.id ? '#fff' : '#888',
-              cursor: 'pointer',
-              fontSize: 16,
-              transition: 'all 0.2s',
-            }}
+            title={tab.label}
           >
-            {tab.label}
+            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-label">{tab.label}</span>
           </button>
         ))}
       </div>
-
-      {/* Content */}
-      <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
+      <div className="sidepanel-content">
         {activeTab === TABS.TILE && (
-          <TilePanel
-            tile={selectedTile}
-            player={player}
-            selectedUnit={selectedUnit}
-            gameState={gameState}
-            onBuild={onBuild}
-            onRecruit={onRecruit}
-            onSelectUnit={onSelectUnit}
-            onDeselectUnit={onDeselectUnit}
-          />
+          <TilePanel tile={selectedTile} player={player} selectedUnit={selectedUnit}
+            gameState={gameState} onBuild={onBuild} onRecruit={onRecruit}
+            onSelectUnit={onSelectUnit} onDeselectUnit={onDeselectUnit} />
         )}
         {activeTab === TABS.ECONOMY && <EconomyPanel player={player} gameState={gameState} />}
         {activeTab === TABS.MILITARY && <MilitaryPanel player={player} gameState={gameState} />}
         {activeTab === TABS.DIPLOMACY && (
-          <DiplomacyPanel
-            player={player}
-            gameState={gameState}
-            onDeclareWar={onDeclareWar}
-            onProposeTreaty={onProposeTreaty}
-          />
+          <DiplomacyPanel player={player} gameState={gameState}
+            onDeclareWar={onDeclareWar} onProposeTreaty={onProposeTreaty} />
         )}
         {activeTab === TABS.RESEARCH && (
           <ResearchPanel player={player} gameState={gameState} onSetResearch={onSetResearch} />
         )}
         {activeTab === TABS.LOG && <LogPanel gameState={gameState} />}
       </div>
-
-      {/* Notifications */}
       {gameState.notifications.length > 0 && (
-        <div style={{
-          padding: 8,
-          background: '#2a1a1a',
-          borderTop: '1px solid #553333',
-          maxHeight: 100,
-          overflow: 'auto',
-        }}>
+        <div className="sidepanel-notifications">
           {gameState.notifications.slice(-3).map((n, i) => (
-            <div key={i} style={{ fontSize: 11, color: '#ffaa88', marginBottom: 4 }}>
-              {n.icon} {n.message}
-            </div>
+            <div key={i} className="notification-item">{n.icon} {n.message}</div>
           ))}
         </div>
       )}
@@ -125,9 +71,18 @@ export default function SidePanel({
   );
 }
 
+function SectionHeader({ children }) {
+  return <h3 className="section-header">{children}</h3>;
+}
+
 function TilePanel({ tile, player, selectedUnit, gameState, onBuild, onRecruit, onSelectUnit, onDeselectUnit }) {
   if (!tile) {
-    return <div style={{ color: '#666', textAlign: 'center', marginTop: 40 }}>Select a tile on the map</div>;
+    return (
+      <div className="panel-empty">
+        <div className="panel-empty-icon">{'\u{1F5FA}'}</div>
+        <div>Select a tile on the map to inspect it</div>
+      </div>
+    );
   }
 
   const isOwned = tile.owner === player?.id;
@@ -135,40 +90,40 @@ function TilePanel({ tile, player, selectedUnit, gameState, onBuild, onRecruit, 
 
   return (
     <div>
-      <h3 style={{ margin: '0 0 8px', color: tile.terrain.color, fontSize: 15 }}>
-        {tile.terrain.name}
-      </h3>
-      <div style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
-        ({tile.q}, {tile.r}) {ownerNation ? `| ${ownerNation.flag} ${ownerNation.name}` : '| Unclaimed'}
+      <div className="tile-header" style={{ borderLeftColor: tile.terrain.color }}>
+        <div className="tile-terrain-name">{tile.terrain.name}</div>
+        <div className="tile-coords">
+          {ownerNation ? `${ownerNation.flag} ${ownerNation.name}` : 'Unclaimed'} &middot; ({tile.q}, {tile.r})
+        </div>
       </div>
 
+      <div className="tile-description">{tile.terrain.description}</div>
+
       {tile.resource && (
-        <div style={{ marginBottom: 8, padding: '4px 8px', background: '#1a1a3a', borderRadius: 4 }}>
-          {RESOURCES[tile.resource]?.icon} {RESOURCES[tile.resource]?.name || tile.resource}
+        <div className="tile-resource-badge">
+          <span>{RESOURCES[tile.resource]?.icon}</span>
+          <span>{RESOURCES[tile.resource]?.name || tile.resource}</span>
+          <span className="tile-resource-value">Value: {RESOURCES[tile.resource]?.baseValue || '?'}</span>
         </div>
       )}
 
-      <div style={{ fontSize: 11, color: '#aaa', marginBottom: 12 }}>{tile.terrain.description}</div>
+      <div className="tile-stats">
+        <span>Defense: +{tile.terrain.defense}</span>
+        <span>Move: {tile.terrain.moveCost}</span>
+        <span>{tile.terrain.buildable ? 'Buildable' : 'Impassable'}</span>
+      </div>
 
-      {/* Buildings */}
       {tile.buildings.length > 0 && (
-        <div style={{ marginBottom: 12 }}>
-          <h4 style={{ margin: '0 0 4px', color: '#8888cc', fontSize: 12 }}>Buildings</h4>
+        <div className="tile-section">
+          <SectionHeader>Buildings</SectionHeader>
           {tile.buildings.map((b, i) => {
             const bType = BUILDINGS[b.type];
             return (
-              <div key={i} style={{
-                padding: '4px 8px',
-                background: '#1a1a3a',
-                borderRadius: 4,
-                marginBottom: 3,
-                fontSize: 12,
-              }}>
-                {bType?.icon} {bType?.name || b.type}
+              <div key={i} className="building-card">
+                <span className="building-icon">{bType?.icon}</span>
+                <span className="building-name">{bType?.name || b.type}</span>
                 {b.constructionLeft > 0 && (
-                  <span style={{ color: '#ffaa44', marginLeft: 8 }}>
-                    (Building... {b.constructionLeft} turns)
-                  </span>
+                  <span className="building-progress">{b.constructionLeft}t left</span>
                 )}
               </div>
             );
@@ -176,88 +131,67 @@ function TilePanel({ tile, player, selectedUnit, gameState, onBuild, onRecruit, 
         </div>
       )}
 
-      {/* Units */}
       {tile.units.length > 0 && (
-        <div style={{ marginBottom: 12 }}>
-          <h4 style={{ margin: '0 0 4px', color: '#88cc88', fontSize: 12 }}>Units</h4>
+        <div className="tile-section">
+          <SectionHeader>Units</SectionHeader>
           {tile.units.map((u, i) => {
             const isSelected = selectedUnit?.id === u.id;
             const isOwn = u.owner === player?.id;
             return (
               <div
                 key={i}
+                className={`unit-card ${isSelected ? 'selected' : ''} ${isOwn ? 'own' : ''}`}
                 onClick={() => isOwn && (isSelected ? onDeselectUnit() : onSelectUnit(u))}
-                style={{
-                  padding: '4px 8px',
-                  background: isSelected ? '#2a3a2a' : '#1a1a3a',
-                  border: isSelected ? '1px solid #44ff44' : '1px solid transparent',
-                  borderRadius: 4,
-                  marginBottom: 3,
-                  fontSize: 12,
-                  cursor: isOwn ? 'pointer' : 'default',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
               >
-                <span>
-                  {u.icon} {u.name}
-                  {u.veteranLevel > 0 && <span style={{ color: '#ffdd44' }}> ★{u.veteranLevel}</span>}
-                </span>
-                <span style={{ fontSize: 10, color: '#888' }}>
-                  HP: {u.hp}/{u.maxHp} | Mv: {u.movementLeft}
-                </span>
+                <span className="unit-icon">{u.icon}</span>
+                <div className="unit-info">
+                  <span className="unit-name">
+                    {u.name}
+                    {u.veteranLevel > 0 && <span className="unit-vet">{'\u2605'.repeat(u.veteranLevel)}</span>}
+                  </span>
+                  <div className="unit-hp-bar">
+                    <div className="unit-hp-fill" style={{
+                      width: `${(u.hp / u.maxHp) * 100}%`,
+                      background: u.hp / u.maxHp > 0.6 ? '#4a9' : u.hp / u.maxHp > 0.3 ? '#da4' : '#d44',
+                    }} />
+                  </div>
+                </div>
+                <div className="unit-stats-mini">
+                  <span>{u.attack}{'\u2694'} {u.defense}{'\u{1F6E1}'}</span>
+                  <span>Mv:{u.movementLeft}</span>
+                </div>
               </div>
             );
           })}
         </div>
       )}
 
-      {/* Build options */}
       {isOwned && (
-        <div>
-          <h4 style={{ margin: '0 0 4px', color: '#cccc88', fontSize: 12 }}>Build</h4>
-          <div style={{ maxHeight: 150, overflow: 'auto' }}>
-            {BUILDING_LIST.filter(b =>
-              b.validTerrain?.includes(tile.terrain.id) &&
-              !tile.buildings.some(existing => existing.type === b.id) &&
-              (!b.requiresTech || player?.researchedTechs?.includes(b.requiresTech)) &&
-              (!b.requiresResource || tile.resource === b.requiresResource)
-            ).map(b => {
-              const affordable = player ? canAfford(player.economy, b.cost) : false;
-              return (
-                <button
-                  key={b.id}
-                  onClick={() => affordable && onBuild(tile.key, b.id)}
-                  disabled={!affordable}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    padding: '4px 8px',
-                    background: affordable ? '#1a2a1a' : '#1a1a1a',
-                    border: '1px solid ' + (affordable ? '#335533' : '#333'),
-                    color: affordable ? '#aaffaa' : '#555',
-                    borderRadius: 4,
-                    marginBottom: 2,
-                    cursor: affordable ? 'pointer' : 'not-allowed',
-                    textAlign: 'left',
-                    fontSize: 11,
-                  }}
-                >
-                  {b.icon} {b.name}
-                  <span style={{ float: 'right', fontSize: 10 }}>
-                    {Object.entries(b.cost).map(([r, a]) => `${r}:${a}`).join(' ')}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        <div className="tile-section">
+          <SectionHeader>Construct</SectionHeader>
+          {BUILDING_LIST.filter(b =>
+            b.validTerrain?.includes(tile.terrain.id) &&
+            !tile.buildings.some(existing => existing.type === b.id) &&
+            (!b.requiresTech || player?.researchedTechs?.includes(b.requiresTech)) &&
+            (!b.requiresResource || tile.resource === b.requiresResource)
+          ).map(b => {
+            const affordable = player ? canAfford(player.economy, b.cost) : false;
+            return (
+              <button key={b.id} className={`build-btn ${affordable ? 'affordable' : 'locked'}`}
+                onClick={() => affordable && onBuild(tile.key, b.id)} disabled={!affordable}>
+                <span className="build-icon">{b.icon}</span>
+                <span className="build-name">{b.name}</span>
+                <span className="build-cost">
+                  {Object.entries(b.cost).map(([r, a]) => `${a} ${r}`).join(', ')}
+                </span>
+              </button>
+            );
+          })}
 
-          {/* Recruit options */}
           {(tile.buildings.some(b => b.type === 'barracks' && b.constructionLeft === 0) ||
             tile.buildings.some(b => b.type === 'port' && b.constructionLeft === 0)) && (
-            <div style={{ marginTop: 8 }}>
-              <h4 style={{ margin: '0 0 4px', color: '#cc8888', fontSize: 12 }}>Recruit</h4>
+            <>
+              <SectionHeader>Recruit Units</SectionHeader>
               {[...LAND_UNITS, ...NAVAL_UNITS].filter(u => {
                 if (u.category === 'land' && !tile.buildings.some(b => b.type === 'barracks' && b.constructionLeft === 0)) return false;
                 if (u.category === 'naval' && !tile.buildings.some(b => b.type === 'port' && b.constructionLeft === 0)) return false;
@@ -266,32 +200,18 @@ function TilePanel({ tile, player, selectedUnit, gameState, onBuild, onRecruit, 
               }).map(u => {
                 const affordable = player ? canAfford(player.economy, u.cost) : false;
                 return (
-                  <button
-                    key={u.id}
-                    onClick={() => affordable && onRecruit(tile.key, u.id)}
-                    disabled={!affordable}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '4px 8px',
-                      background: affordable ? '#2a1a1a' : '#1a1a1a',
-                      border: '1px solid ' + (affordable ? '#553333' : '#333'),
-                      color: affordable ? '#ffaaaa' : '#555',
-                      borderRadius: 4,
-                      marginBottom: 2,
-                      cursor: affordable ? 'pointer' : 'not-allowed',
-                      textAlign: 'left',
-                      fontSize: 11,
-                    }}
-                  >
-                    {u.icon} {u.name} (ATK:{u.attack} DEF:{u.defense})
-                    <span style={{ float: 'right', fontSize: 10 }}>
-                      {Object.entries(u.cost).map(([r, a]) => `${r}:${a}`).join(' ')}
+                  <button key={u.id} className={`build-btn recruit-btn ${affordable ? 'affordable' : 'locked'}`}
+                    onClick={() => affordable && onRecruit(tile.key, u.id)} disabled={!affordable}>
+                    <span className="build-icon">{u.icon}</span>
+                    <span className="build-name">{u.name}</span>
+                    <span className="build-stats">{u.attack}{'\u2694'} {u.defense}{'\u{1F6E1}'}</span>
+                    <span className="build-cost">
+                      {Object.entries(u.cost).map(([r, a]) => `${a} ${r}`).join(', ')}
                     </span>
                   </button>
                 );
               })}
-            </div>
+            </>
           )}
         </div>
       )}
@@ -303,44 +223,36 @@ function EconomyPanel({ player, gameState }) {
   if (!player) return null;
   const economy = player.economy;
   const ownedTiles = Object.values(gameState.map.tiles).filter(t => t.owner === player.id);
+  const net = economy.income - economy.expenses;
 
   return (
     <div>
-      <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>Economy</h3>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-        <StatBox label="Treasury" value={`💰 ${Math.floor(economy.gold)}`} />
-        <StatBox label="Income" value={`+${economy.income}`} color="#4caf50" />
-        <StatBox label="Expenses" value={`-${economy.expenses}`} color="#f44336" />
-        <StatBox label="Net" value={`${economy.income - economy.expenses > 0 ? '+' : ''}${economy.income - economy.expenses}`}
-          color={economy.income - economy.expenses >= 0 ? '#4caf50' : '#f44336'} />
+      <SectionHeader>Treasury</SectionHeader>
+      <div className="econ-summary">
+        <div className="econ-box gold"><div className="econ-label">Gold</div><div className="econ-value">{Math.floor(economy.gold)}</div></div>
+        <div className="econ-box"><div className="econ-label">Income</div><div className="econ-value positive">+{economy.income}</div></div>
+        <div className="econ-box"><div className="econ-label">Expenses</div><div className="econ-value negative">-{economy.expenses}</div></div>
+        <div className="econ-box"><div className="econ-label">Net</div><div className={`econ-value ${net >= 0 ? 'positive' : 'negative'}`}>{net >= 0 ? '+' : ''}{net}</div></div>
       </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-        <StatBox label="Population" value={`👥 ${economy.population}`} />
-        <StatBox label="Workers" value={`${economy.workerCount}/${economy.maxWorkers}`} />
-        <StatBox label="Territory" value={`${ownedTiles.length} tiles`} />
-        <StatBox label="Tax Rate" value={`${(economy.taxRate * 100).toFixed(0)}%`} />
+      <SectionHeader>Empire</SectionHeader>
+      <div className="econ-summary">
+        <div className="econ-box"><div className="econ-label">Population</div><div className="econ-value">{economy.population.toLocaleString()}</div></div>
+        <div className="econ-box"><div className="econ-label">Workers</div><div className="econ-value">{economy.workerCount}/{economy.maxWorkers}</div></div>
+        <div className="econ-box"><div className="econ-label">Territory</div><div className="econ-value">{ownedTiles.length} tiles</div></div>
+        <div className="econ-box"><div className="econ-label">Tax Rate</div><div className="econ-value">{(economy.taxRate * 100).toFixed(0)}%</div></div>
       </div>
-
-      <h4 style={{ margin: '12px 0 6px', color: '#8888cc', fontSize: 12 }}>Resources</h4>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
-        {Object.entries(economy.resources)
-          .filter(([, v]) => v > 0)
-          .sort(([, a], [, b]) => b - a)
-          .map(([resId, amount]) => {
-            const res = RESOURCES[resId];
-            return (
-              <div key={resId} style={{
-                padding: '3px 6px',
-                background: '#1a1a3a',
-                borderRadius: 3,
-                fontSize: 11,
-              }}>
-                {res?.icon} {res?.name}: <strong>{amount}</strong>
-              </div>
-            );
-          })}
+      <SectionHeader>Stockpile</SectionHeader>
+      <div className="resource-grid">
+        {Object.entries(economy.resources).filter(([, v]) => v > 0).sort(([, a], [, b]) => b - a).map(([id, amt]) => {
+          const res = RESOURCES[id];
+          return (
+            <div key={id} className="resource-item">
+              <span className="resource-icon">{res?.icon}</span>
+              <span className="resource-name">{res?.name}</span>
+              <span className="resource-amt">{amt}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -348,116 +260,79 @@ function EconomyPanel({ player, gameState }) {
 
 function MilitaryPanel({ player, gameState }) {
   if (!player) return null;
-  const allUnits = Object.values(gameState.map.tiles)
-    .flatMap(t => t.units)
-    .filter(u => u.owner === player.id);
-
+  const allUnits = Object.values(gameState.map.tiles).flatMap(t => t.units).filter(u => u.owner === player.id);
   const unitCounts = {};
-  for (const unit of allUnits) {
-    unitCounts[unit.type] = (unitCounts[unit.type] || 0) + 1;
-  }
+  for (const unit of allUnits) unitCounts[unit.type] = (unitCounts[unit.type] || 0) + 1;
+  const totalUpkeep = allUnits.reduce((s, u) => s + (u.upkeep || 2), 0);
 
   return (
     <div>
-      <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>Military</h3>
-      <StatBox label="Total Forces" value={`⚔️ ${allUnits.length} units`} />
-
-      <h4 style={{ margin: '12px 0 6px', color: '#cc8888', fontSize: 12 }}>Army Composition</h4>
+      <SectionHeader>Armed Forces</SectionHeader>
+      <div className="econ-summary">
+        <div className="econ-box"><div className="econ-label">Total Units</div><div className="econ-value">{allUnits.length}</div></div>
+        <div className="econ-box"><div className="econ-label">Upkeep</div><div className="econ-value negative">-{totalUpkeep}/turn</div></div>
+      </div>
+      <SectionHeader>Composition</SectionHeader>
       {Object.entries(unitCounts).map(([type, count]) => {
         const unit = UNITS[type];
         return (
-          <div key={type} style={{
-            padding: '4px 8px',
-            background: '#1a1a3a',
-            borderRadius: 4,
-            marginBottom: 3,
-            fontSize: 12,
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}>
+          <div key={type} className="unit-roster-row">
             <span>{unit?.icon} {unit?.name}</span>
-            <span style={{ color: '#aaa' }}>x{count}</span>
+            <span className="unit-roster-count">\u00d7{count}</span>
           </div>
         );
       })}
-
-      {allUnits.length === 0 && (
-        <div style={{ color: '#666', fontSize: 11, marginTop: 8 }}>
-          No units. Build barracks to recruit.
-        </div>
-      )}
+      {allUnits.length === 0 && <div className="panel-muted">No military forces. Build barracks to recruit.</div>}
     </div>
   );
 }
 
 function DiplomacyPanel({ player, gameState, onDeclareWar, onProposeTreaty }) {
   if (!player) return null;
-
   const otherNations = gameState.nations.filter(n => n.id !== player.id && n.alive);
 
   return (
     <div>
-      <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>Diplomacy</h3>
+      <SectionHeader>Foreign Relations</SectionHeader>
       {otherNations.map(nation => {
         const rel = player.diplomacy[nation.id];
         if (!rel) return null;
-        const statusColor = {
-          war: '#ff4444',
-          hostile: '#ff8844',
-          cold: '#ccaa44',
-          neutral: '#888888',
-          friendly: '#44cc44',
-          allied: '#4488ff',
-        }[rel.status] || '#888';
+        const colors = {
+          war: '#c44', hostile: '#d86', cold: '#ba8', neutral: '#888',
+          friendly: '#6a6', allied: '#68c',
+        };
+        const statusColor = colors[rel.status] || '#888';
 
         return (
-          <div key={nation.id} style={{
-            padding: 8,
-            background: '#1a1a3a',
-            borderRadius: 6,
-            marginBottom: 6,
-            border: `1px solid ${nation.color}44`,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span>
-                <span style={{ fontSize: 16 }}>{nation.flag}</span>
-                <strong style={{ color: nation.color, marginLeft: 6 }}>{nation.name}</strong>
-              </span>
-              <span style={{ color: statusColor, fontSize: 11, fontWeight: 'bold' }}>
-                {rel.status.toUpperCase()} ({rel.value > 0 ? '+' : ''}{Math.floor(rel.value)})
+          <div key={nation.id} className="diplo-card">
+            <div className="diplo-header">
+              <span className="diplo-flag">{nation.flag}</span>
+              <span className="diplo-name" style={{ color: nation.color }}>{nation.name}</span>
+              <span className="diplo-status" style={{ color: statusColor, borderColor: statusColor }}>
+                {rel.status.toUpperCase()}
               </span>
             </div>
-
-            {/* Relation bar */}
-            <div style={{ height: 4, background: '#333', borderRadius: 2, marginBottom: 6 }}>
-              <div style={{
-                width: `${(rel.value + 100) / 2}%`,
-                height: '100%',
-                background: statusColor,
-                borderRadius: 2,
-                transition: 'width 0.3s',
-              }} />
+            <div className="diplo-bar-track">
+              <div className="diplo-bar-fill" style={{ width: `${(rel.value + 100) / 2}%`, background: statusColor }} />
+              <span className="diplo-bar-label">{rel.value > 0 ? '+' : ''}{Math.floor(rel.value)}</span>
             </div>
-
-            {/* Treaties */}
             {rel.treaties.length > 0 && (
-              <div style={{ fontSize: 10, color: '#aaa', marginBottom: 6 }}>
-                Treaties: {rel.treaties.map(t => t.type.replace(/_/g, ' ')).join(', ')}
+              <div className="diplo-treaties">
+                {rel.treaties.map((t, i) => (
+                  <span key={i} className="treaty-badge">{t.type.replace(/_/g, ' ')}</span>
+                ))}
               </div>
             )}
-
-            {/* Actions */}
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-              {rel.status !== RELATION_STATUS.WAR && (
+            <div className="diplo-actions">
+              {rel.status !== RELATION_STATUS.WAR ? (
                 <>
-                  <DiplomacyButton label="Trade" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.TRADE_AGREEMENT)} />
-                  <DiplomacyButton label="Non-Aggression" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.NON_AGGRESSION)} />
-                  <DiplomacyButton label="Alliance" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.ALLIANCE)} />
-                  <DiplomacyButton label="Declare War" onClick={() => onDeclareWar(nation.id)} color="#ff4444" />
+                  <button className="diplo-btn" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.TRADE_AGREEMENT)}>Trade</button>
+                  <button className="diplo-btn" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.NON_AGGRESSION)}>Pact</button>
+                  <button className="diplo-btn" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.ALLIANCE)}>Alliance</button>
+                  <button className="diplo-btn war" onClick={() => onDeclareWar(nation.id)}>War</button>
                 </>
-              )}
-              {rel.status === RELATION_STATUS.WAR && (
-                <DiplomacyButton label="Propose Peace" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.PEACE)} color="#44cc44" />
+              ) : (
+                <button className="diplo-btn peace" onClick={() => onProposeTreaty(nation.id, TREATY_TYPES.PEACE)}>Propose Peace</button>
               )}
             </div>
           </div>
@@ -467,94 +342,43 @@ function DiplomacyPanel({ player, gameState, onDeclareWar, onProposeTreaty }) {
   );
 }
 
-function DiplomacyButton({ label, onClick, color = '#6688aa' }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: '3px 8px',
-        background: 'transparent',
-        border: `1px solid ${color}88`,
-        color,
-        borderRadius: 3,
-        cursor: 'pointer',
-        fontSize: 10,
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
 function ResearchPanel({ player, gameState, onSetResearch }) {
   if (!player) return null;
-
   const available = getAvailableTechs(player.researchedTechs || []);
   const researched = player.researchedTechs || [];
 
   return (
     <div>
-      <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>Research</h3>
-
+      <SectionHeader>Research</SectionHeader>
       {player.currentResearch && (
-        <div style={{
-          padding: 8,
-          background: '#1a1a3a',
-          borderRadius: 6,
-          marginBottom: 12,
-          border: '1px solid #4444aa',
-        }}>
-          <div style={{ fontSize: 12, color: '#8888ff', marginBottom: 4 }}>Currently Researching:</div>
-          <div style={{ fontWeight: 'bold' }}>
-            🔬 {TECHNOLOGIES[player.currentResearch]?.name}
+        <div className="research-current">
+          <div className="research-current-label">Researching</div>
+          <div className="research-current-name">{'\u{1F52C}'} {TECHNOLOGIES[player.currentResearch]?.name}</div>
+          <div className="research-bar-track">
+            <div className="research-bar-fill"
+              style={{ width: `${(player.researchProgress / (TECHNOLOGIES[player.currentResearch]?.cost || 100)) * 100}%` }} />
           </div>
-          <div style={{ height: 6, background: '#333', borderRadius: 3, marginTop: 6 }}>
-            <div style={{
-              width: `${(player.researchProgress / (TECHNOLOGIES[player.currentResearch]?.cost || 100)) * 100}%`,
-              height: '100%',
-              background: '#4444ff',
-              borderRadius: 3,
-              transition: 'width 0.3s',
-            }} />
-          </div>
-          <div style={{ fontSize: 10, color: '#888', marginTop: 4 }}>
-            {Math.floor(player.researchProgress)} / {TECHNOLOGIES[player.currentResearch]?.cost}
+          <div className="research-progress-text">
+            {Math.floor(player.researchProgress)} / {TECHNOLOGIES[player.currentResearch]?.cost} RP
           </div>
         </div>
       )}
 
-      <h4 style={{ margin: '0 0 6px', color: '#88cc88', fontSize: 12 }}>Available Technologies</h4>
+      <SectionHeader>Available</SectionHeader>
       {available.map(tech => (
-        <button
-          key={tech.id}
-          onClick={() => onSetResearch(tech.id)}
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: '6px 8px',
-            background: player.currentResearch === tech.id ? '#1a2a3a' : '#1a1a2a',
-            border: `1px solid ${player.currentResearch === tech.id ? '#4488cc' : '#333'}`,
-            color: '#ccccee',
-            borderRadius: 4,
-            marginBottom: 3,
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontSize: 11,
-          }}
-        >
-          <div style={{ fontWeight: 'bold' }}>{tech.name} <span style={{ color: '#666' }}>({tech.category})</span></div>
-          <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>{tech.description}</div>
-          <div style={{ fontSize: 10, color: '#666', marginTop: 2 }}>Cost: {tech.cost} RP</div>
+        <button key={tech.id} className={`tech-btn ${player.currentResearch === tech.id ? 'active' : ''}`}
+          onClick={() => onSetResearch(tech.id)}>
+          <div className="tech-name">{tech.name}</div>
+          <div className="tech-meta">{tech.category} &middot; Tier {tech.tier} &middot; {tech.cost} RP</div>
+          <div className="tech-desc">{tech.description}</div>
         </button>
       ))}
 
       {researched.length > 0 && (
         <>
-          <h4 style={{ margin: '12px 0 6px', color: '#888', fontSize: 12 }}>Completed ({researched.length})</h4>
+          <SectionHeader>Discovered ({researched.length})</SectionHeader>
           {researched.map(id => (
-            <div key={id} style={{ fontSize: 10, color: '#555', padding: '2px 0' }}>
-              ✅ {TECHNOLOGIES[id]?.name}
-            </div>
+            <div key={id} className="tech-completed">\u2705 {TECHNOLOGIES[id]?.name}</div>
           ))}
         </>
       )}
@@ -565,34 +389,13 @@ function ResearchPanel({ player, gameState, onSetResearch }) {
 function LogPanel({ gameState }) {
   return (
     <div>
-      <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>Game Log</h3>
-      <div style={{ maxHeight: 500, overflow: 'auto' }}>
-        {[...gameState.gameLog].reverse().map((entry, i) => (
-          <div key={i} style={{
-            padding: '4px 0',
-            borderBottom: '1px solid #1a1a2a',
-            fontSize: 11,
-            color: '#aaa',
-          }}>
-            <span style={{ color: '#555', marginRight: 6 }}>T{entry.turn}</span>
-            {entry.message}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function StatBox({ label, value, color }) {
-  return (
-    <div style={{
-      padding: '6px 8px',
-      background: '#1a1a3a',
-      borderRadius: 4,
-      textAlign: 'center',
-    }}>
-      <div style={{ fontSize: 10, color: '#888' }}>{label}</div>
-      <div style={{ fontWeight: 'bold', color: color || '#e0e0e0', fontSize: 13 }}>{value}</div>
+      <SectionHeader>Chronicle</SectionHeader>
+      {[...gameState.gameLog].reverse().map((entry, i) => (
+        <div key={i} className="log-entry">
+          <span className="log-turn">Turn {entry.turn}</span>
+          <span className="log-msg">{entry.message}</span>
+        </div>
+      ))}
     </div>
   );
 }

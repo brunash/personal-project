@@ -7,102 +7,80 @@ export default function TopBar({ gameState, onEndTurn }) {
   if (!player) return null;
 
   const economy = player.economy;
-  const importantResources = ['grain', 'timber', 'iron', 'coal', 'steel', 'arms', 'gold'];
+  const net = economy.income - economy.expenses;
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      background: 'linear-gradient(180deg, #1a1a2e 0%, #16162a 100%)',
-      borderBottom: '2px solid #333355',
-      padding: '6px 16px',
-      color: '#e0e0e0',
-      fontSize: 13,
-      height: 42,
-      gap: 8,
-      flexShrink: 0,
-    }}>
-      {/* Nation info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 18 }}>{player.flag}</span>
-        <span style={{ fontWeight: 'bold', color: player.color }}>{player.name}</span>
-        <span style={{ color: '#888', fontSize: 11 }}>Turn {gameState.turn}</span>
+    <div className="topbar">
+      {/* Left: Nation identity */}
+      <div className="topbar-section topbar-nation">
+        <span className="topbar-flag">{player.flag}</span>
+        <div>
+          <div className="topbar-nation-name" style={{ color: player.color }}>{player.name}</div>
+          <div className="topbar-turn">Year {1800 + gameState.turn} &middot; Turn {gameState.turn}</div>
+        </div>
       </div>
 
-      {/* Resources */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-        {/* Gold */}
-        <ResourceBadge icon="💰" value={Math.floor(economy.gold)} label="Gold"
-          trend={economy.income - economy.expenses} />
-
-        {importantResources.filter(r => r !== 'gold').map(resId => {
-          const res = RESOURCES[resId];
-          if (!res) return null;
-          return (
-            <ResourceBadge
-              key={resId}
-              icon={res.icon}
-              value={economy.resources[resId] || 0}
-              label={res.name}
-            />
-          );
-        })}
-
-        <span style={{ color: '#666', margin: '0 4px' }}>|</span>
-
-        {/* Population */}
-        <ResourceBadge icon="👥" value={economy.population} label="Population" />
-        <ResourceBadge icon="😊" value={Math.floor(economy.stability)} label="Stability"
-          color={economy.stability > 60 ? '#4caf50' : economy.stability > 30 ? '#ff9800' : '#f44336'} />
+      {/* Center: Resources */}
+      <div className="topbar-section topbar-resources">
+        <ResourceBadge icon="\u{1F4B0}" value={Math.floor(economy.gold)} label="Treasury" highlight
+          trend={net} />
+        <div className="topbar-divider" />
+        <ResourceBadge icon={RESOURCES.grain?.icon} value={economy.resources.grain || 0} label="Grain" />
+        <ResourceBadge icon={RESOURCES.timber?.icon} value={economy.resources.timber || 0} label="Timber" />
+        <ResourceBadge icon={RESOURCES.iron?.icon} value={economy.resources.iron || 0} label="Iron" />
+        <ResourceBadge icon={RESOURCES.coal?.icon} value={economy.resources.coal || 0} label="Coal" />
+        <ResourceBadge icon={RESOURCES.steel?.icon} value={economy.resources.steel || 0} label="Steel" />
+        <ResourceBadge icon={RESOURCES.arms?.icon} value={economy.resources.arms || 0} label="Arms" />
+        <div className="topbar-divider" />
+        <ResourceBadge icon="\u{1F465}" value={economy.population} label="Population" />
+        <ResourceBadge
+          icon={economy.stability > 60 ? '\u{1F7E2}' : economy.stability > 30 ? '\u{1F7E1}' : '\u{1F534}'}
+          value={Math.floor(economy.stability)}
+          label="Stability"
+          color={economy.stability > 60 ? '#6dba6d' : economy.stability > 30 ? '#d4a844' : '#c45050'}
+        />
       </div>
 
-      {/* Research */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {/* Right: Research + End Turn */}
+      <div className="topbar-section topbar-right">
         {player.currentResearch && (
-          <span style={{ fontSize: 11, color: '#8888ff' }}>
-            🔬 {player.currentResearch.replace(/_/g, ' ')}
-            <span style={{ color: '#666', marginLeft: 4 }}>
-              ({Math.floor(player.researchProgress)}/{TECHNOLOGIES[player.currentResearch]?.cost || '?'})
-            </span>
-          </span>
+          <div className="topbar-research">
+            <div className="topbar-research-label">
+              {'\u{1F52C}'} {TECHNOLOGIES[player.currentResearch]?.name || player.currentResearch.replace(/_/g, ' ')}
+            </div>
+            <div className="topbar-research-bar">
+              <div
+                className="topbar-research-fill"
+                style={{ width: `${(player.researchProgress / (TECHNOLOGIES[player.currentResearch]?.cost || 100)) * 100}%` }}
+              />
+            </div>
+            <div className="topbar-research-text">
+              {Math.floor(player.researchProgress)} / {TECHNOLOGIES[player.currentResearch]?.cost || '?'}
+            </div>
+          </div>
         )}
+        <button className="topbar-end-turn" onClick={onEndTurn}>
+          <span>End Turn</span>
+          <span className="topbar-end-turn-arrow">\u25B6</span>
+        </button>
       </div>
-
-      {/* End Turn */}
-      <button
-        onClick={onEndTurn}
-        style={{
-          background: 'linear-gradient(180deg, #4a6fa5 0%, #3a5a8a 100%)',
-          border: '1px solid #5a7fb5',
-          color: '#fff',
-          padding: '6px 20px',
-          borderRadius: 4,
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontSize: 13,
-          transition: 'all 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.background = 'linear-gradient(180deg, #5a8fc5 0%, #4a7aaa 100%)'}
-        onMouseLeave={e => e.target.style.background = 'linear-gradient(180deg, #4a6fa5 0%, #3a5a8a 100%)'}
-      >
-        End Turn ⏭
-      </button>
     </div>
   );
 }
 
-function ResourceBadge({ icon, value, label, trend, color }) {
-  const displayValue = value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value;
+function ResourceBadge({ icon, value, label, trend, color, highlight }) {
+  const displayValue = value >= 10000 ? `${(value / 1000).toFixed(0)}k` : value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 3 }} title={label}>
-      <span style={{ fontSize: 14 }}>{icon}</span>
-      <span style={{ color: color || '#e0e0e0', fontWeight: 'bold', fontSize: 12 }}>{displayValue}</span>
-      {trend !== undefined && trend !== 0 && (
-        <span style={{ fontSize: 10, color: trend > 0 ? '#4caf50' : '#f44336' }}>
-          {trend > 0 ? '+' : ''}{trend}
-        </span>
-      )}
+    <div className={`res-badge ${highlight ? 'res-badge-gold' : ''}`} title={label}>
+      <span className="res-badge-icon">{icon}</span>
+      <div>
+        <span className="res-badge-value" style={color ? { color } : undefined}>{displayValue}</span>
+        {trend !== undefined && trend !== 0 && (
+          <span className={`res-badge-trend ${trend > 0 ? 'positive' : 'negative'}`}>
+            {trend > 0 ? '+' : ''}{trend}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
